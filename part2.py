@@ -56,11 +56,11 @@ feature_test_tensor = torch.FloatTensor(feature_test_data.values)
 target_test_tensor = torch.LongTensor(target_test_data.values)
 
 # Create data loaders
-batch_size = 32
+BATCH_SIZE = 32
 train_dataset = TensorDataset(feature_train_tensor, target_train_tensor)
-train_loader = DataLoader(train_dataset, batch_size=batch_size)
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE)
 test_dataset = TensorDataset(feature_test_tensor, target_test_tensor)
-test_loader = DataLoader(test_dataset, batch_size=batch_size)
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
 print("Preprocessed")
 
@@ -69,10 +69,9 @@ print("Preprocessed")
 # --------------------------------------------------------------------------------------------------------
 
 # Define hyperparameters
-learning_rate = 0.001
-num_epochs = 5
+LEARNING_RATE = 0.00001
+NUM_EPOCHS = 20
 input_shape = feature_train_data.shape[1]  # Get input shape from preprocessed data
-print(input_shape)
 
 # --------------------------------------------------------------------------------------------------------
 # Neural Network Architecture
@@ -82,9 +81,9 @@ class NeuralNetwork(nn.Module):
     def __init__(self, input_size, num_classes):
         super(NeuralNetwork, self).__init__()
         self.inputlayer = nn.Linear(input_size, 64)
-        self.dropout1 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.3)
         self.hiddenlayer = nn.Linear(64, 32)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.3)
         self.outputlayer = nn.Linear(32, num_classes)
         
     def forward(self, x):
@@ -103,27 +102,29 @@ model = NeuralNetwork(input_shape, num_classes=len(label_encoder.classes_)).to(d
 
 # Define loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 # Training history
 history = {
     'train_loss': [],
     'train_acc': [],
-    'val_loss': [],
-    'val_acc': []
+    'validation_loss': [],
+    'validation_acc': []
 }
 
 # Training loop
 print("Training the model...")
-for epoch in range(num_epochs):
-    model.train()
-    running_loss = 0.0
+for epoch in range(NUM_EPOCHS):
+    model = model.train()
+    train_running_loss = 0.0
     correct = 0
     total = 0
     
-    # Use the train_loader to iterate through batches
-    for inputs, labels in train_loader:
-        inputs, labels = inputs.to(device), labels.to(device)
+    # Use the train_loader to iterate through batches - largely influenced from PyTorch Quick Start
+    for i, (inputs, labels) in enumerate(train_loader):
+        # Attach to device
+        inputs = inputs.to(device)
+        labels = labels.to(device)
         
         # Forward pass
         outputs = model(inputs)
@@ -135,44 +136,44 @@ for epoch in range(num_epochs):
         optimizer.step()
         
         # Statistics
-        running_loss += loss.item()
-        _, predicted = torch.max(outputs.data, 1)
+        train_running_loss += loss.detach().item()
+
+        predicted = torch.max(outputs.data, 1)[1]
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
     
     # Calculate epoch statistics
-    epoch_loss = running_loss / len(train_loader)
-    epoch_acc = correct / total
+    train_loss = train_running_loss / len(train_loader)
+    train_acc = correct / total
     
     # Validation
     model.eval()
-    val_loss = 0.0
-    val_correct = 0
-    val_total = 0
+    validation_loss = 0.0
+    validation_correct = 0
+    validation_total = 0
     
-    with torch.no_grad():
-        # Use the test_loader to iterate through batches
-        for inputs, labels in test_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            
-            val_loss += loss.item()
-            _, predicted = torch.max(outputs.data, 1)
-            val_total += labels.size(0)
-            val_correct += (predicted == labels).sum().item()
+    # Use the test_loader to iterate through batches
+    for inputs, labels in test_loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        
+        validation_loss += loss.item()
+        predicted = torch.max(outputs.data, 1)[1]
+        validation_total += labels.size(0)
+        validation_correct += (predicted == labels).sum().item()
     
-    val_loss = val_loss / len(test_loader)
-    val_acc = val_correct / val_total
+    validation_loss = validation_loss / len(test_loader)
+    validation_acc = validation_correct / validation_total
     
     # Store history
-    history['train_loss'].append(epoch_loss)
-    history['train_acc'].append(epoch_acc)
-    history['val_loss'].append(val_loss)
-    history['val_acc'].append(val_acc)
+    history['train_loss'].append(train_loss)
+    history['train_acc'].append(train_acc)
+    history['validation_loss'].append(validation_loss)
+    history['validation_acc'].append(validation_acc)
     
     # Print progress
-    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}')
+    print(f'Epoch [{epoch+1}/{NUM_EPOCHS}], Loss: {train_loss:.4f}, Accuracy: {train_acc:.4f}, Val Loss: {validation_loss:.4f}, Val Accuracy: {validation_acc:.4f}')
 
 # Final evaluation
 model.eval()
@@ -194,15 +195,11 @@ all_labels = np.array(all_labels)
 
 # Calculate metrics
 accuracy = accuracy_score(all_labels, all_predictions)
-precision = precision_score(all_labels, all_predictions, average='weighted')
-recall = recall_score(all_labels, all_predictions, average='weighted')
 f1 = f1_score(all_labels, all_predictions, average='weighted')
 
 # Print metrics
 print(f"\nTest Results:")
 print(f"Accuracy: {accuracy:.4f}")
-print(f"Precision: {precision:.4f}")
-print(f"Recall: {recall:.4f}")
 print(f"F1 Score: {f1:.4f}")
 
 # Print classification report
@@ -210,28 +207,20 @@ print("\nClassification Report:")
 print(classification_report(all_labels, all_predictions, target_names=label_encoder.classes_))
 
 # --------------------------------------------------------------------------------------------------------
-# Plotting Performance
+# Plotting Accuracy Graph
 # --------------------------------------------------------------------------------------------------------
 
 def plot_performance(history):
     # Plot training & validation accuracy values
-    plt.figure(figsize=(12, 5))
+    plt.figure(figsize=(8, 5))
     
     # Plot accuracy
-    plt.subplot(1, 2, 1)
+    plt.subplot(1, 1, 1)
     plt.plot(history['train_acc'])
-    plt.plot(history['val_acc'])
+    plt.plot(history['validation_acc'])
     plt.title('Model Accuracy')
+    plt.xticks(range(0, len(history['train_acc'])))
     plt.ylabel('Accuracy')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Validation'], loc='upper left')
-    
-    # Plot loss
-    plt.subplot(1, 2, 2)
-    plt.plot(history['train_loss'])
-    plt.plot(history['val_loss'])
-    plt.title('Model Loss')
-    plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Validation'], loc='upper left')
     
@@ -242,25 +231,21 @@ def plot_performance(history):
 # Plot the performance
 plot_performance(history)
 
-# Save results to file
-with open("Neural_Network_Results.txt", "w") as f:
-    f.write("Neural Network Results (PyTorch)\n")
-    f.write("=" * 30 + "\n\n")
-    f.write(f"Model Architecture:\n")
-    f.write(str(model) + "\n\n")
-    f.write("Hyperparameters:\n")
-    f.write(f"Learning Rate: {learning_rate}\n")
-    f.write(f"Number of Epochs: {num_epochs}\n")
-    f.write(f"Batch Size: {batch_size}\n")
-    f.write(f"Device: {device}\n\n")
-    f.write("Performance Metrics:\n")
-    f.write(f"Accuracy: {accuracy:.4f}\n")
-    f.write(f"Precision: {precision:.4f}\n")
-    f.write(f"Recall: {recall:.4f}\n")
-    f.write(f"F1 Score: {f1:.4f}\n\n")
-    f.write("Classification Report:\n")
-    f.write(classification_report(all_labels, all_predictions, target_names=label_encoder.classes_))
+RESULTSFILE = "Part_2_Results.txt"
 
-print("Results saved to Neural_Network_Results.txt")
-print("Performance plot saved to neural_network_performance.png")
+# Save results to results file
+with open(RESULTSFILE, "w") as f:
+    f.write("Neural Network Results\n")
+    # Parameters
+    f.write("Parameters:\n")
+    f.write(f"Learning Rate: {LEARNING_RATE}\n")
+    f.write(f"Number of Epochs: {NUM_EPOCHS}\n")
+    f.write(f"Batch Size: {BATCH_SIZE}\n")
+
+# Save Metrics to results file
+with open(RESULTSFILE, "w") as f:
+    # Metrics
+    f.write("Performance Metrics:\n")
+    f.write(f"Final Accuracy: {accuracy:.4f}\n")
+    f.write(f"F1 Score: {f1:.4f}\n\n")
 

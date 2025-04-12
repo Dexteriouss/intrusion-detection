@@ -74,7 +74,7 @@ def run_model(model, feature_train_data, target_train_data, feature_test_data, t
     
     # Calculate metrics - Uses built-in functions from sklearn to avoid calculation errors
     accuracy = accuracy_score(comparison_values, label_prediction)
-    f1 = f1_score(comparison_values, label_prediction)
+    f1 = f1_score(comparison_values, label_prediction, average="weighted")
 
     # Write the results to a txt file for submission
     with open(RESULTSFILE, "a") as f:
