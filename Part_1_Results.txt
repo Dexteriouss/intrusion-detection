@@ -1,0 +1,12 @@
+Model: LogisticRegression()
+Accuracy: 1.0
+F1 Score: 1.0
+
+Model: SVC()
+Accuracy: 0.9991659716430359
+F1 Score: 0.9991659716430359
+
+Model: RandomForestClassifier()
+Accuracy: 1.0
+F1 Score: 1.0
+
