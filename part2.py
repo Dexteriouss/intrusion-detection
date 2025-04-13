@@ -92,9 +92,9 @@ class NeuralNetwork(nn.Module):
     def __init__(self, input_size, num_classes):
         super(NeuralNetwork, self).__init__()
         self.inputlayer = nn.Linear(input_size, 64)
-        #self.dropout1 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.5)
         self.hiddenlayer = nn.Linear(64, 32)
-        #self.dropout2 = nn.Dropout(0.3)
+        self.dropout2 = nn.Dropout(0.3)
         self.outputlayer = nn.Linear(32, num_classes)
         
     def forward(self, x):
