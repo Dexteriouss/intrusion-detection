@@ -1,4 +1,50 @@
-Performance Metrics:
-Final Accuracy: 0.8957
-F1 Score: 0.8946
+NEURAL NETWORK RESULTS
+--------------------------------------------------
+
+PARAMETERS:
+Learning Rate: 1e-05
+Number of Epochs: 35
+Batch Size: 32
+
+RUNTIME METRICS:
+Epoch 1, Training Accuracy: 0.4980, Validation Accuracy: 0.4971
+Epoch 2, Training Accuracy: 0.4984, Validation Accuracy: 0.4971
+Epoch 3, Training Accuracy: 0.4984, Validation Accuracy: 0.4971
+Epoch 4, Training Accuracy: 0.4984, Validation Accuracy: 0.4971
+Epoch 5, Training Accuracy: 0.4987, Validation Accuracy: 0.4971
+Epoch 6, Training Accuracy: 0.4987, Validation Accuracy: 0.4971
+Epoch 7, Training Accuracy: 0.4991, Validation Accuracy: 0.4971
+Epoch 8, Training Accuracy: 0.4991, Validation Accuracy: 0.4979
+Epoch 9, Training Accuracy: 0.4991, Validation Accuracy: 0.4979
+Epoch 10, Training Accuracy: 0.5027, Validation Accuracy: 0.5013
+Epoch 11, Training Accuracy: 0.5177, Validation Accuracy: 0.5413
+Epoch 12, Training Accuracy: 0.7549, Validation Accuracy: 0.9033
+Epoch 13, Training Accuracy: 0.9350, Validation Accuracy: 0.9533
+Epoch 14, Training Accuracy: 0.9728, Validation Accuracy: 0.9925
+Epoch 15, Training Accuracy: 0.9925, Validation Accuracy: 0.9967
+Epoch 16, Training Accuracy: 0.9968, Validation Accuracy: 0.9975
+Epoch 17, Training Accuracy: 0.9975, Validation Accuracy: 0.9983
+Epoch 18, Training Accuracy: 0.9979, Validation Accuracy: 0.9983
+Epoch 19, Training Accuracy: 0.9979, Validation Accuracy: 0.9983
+Epoch 20, Training Accuracy: 0.9989, Validation Accuracy: 1.0000
+Epoch 21, Training Accuracy: 0.9993, Validation Accuracy: 1.0000
+Epoch 22, Training Accuracy: 0.9993, Validation Accuracy: 1.0000
+Epoch 23, Training Accuracy: 0.9996, Validation Accuracy: 1.0000
+Epoch 24, Training Accuracy: 0.9996, Validation Accuracy: 1.0000
+Epoch 25, Training Accuracy: 0.9996, Validation Accuracy: 1.0000
+Epoch 26, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 27, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 28, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 29, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 30, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 31, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 32, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 33, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 34, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+Epoch 35, Training Accuracy: 1.0000, Validation Accuracy: 1.0000
+
+
+FINAL PERFORMANCE METRICS:
+Final Accuracy: 1.0000
+F1 Score: 1.0000
 

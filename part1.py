@@ -25,17 +25,17 @@ label_encoders = {}
 for column in categorical_columns:
     label_encoders[column] = preprocessing.LabelEncoder()
     train_data[column] = label_encoders[column].fit_transform(train_data[column])       # Encodes the categorical features, then applies the encoding
-    test_data[column] = label_encoders[column].transform(test_data[column])             # Only applies the previous encoding to prevent cross-contamination/learn from test data
+    test_data[column] = label_encoders[column].transform(test_data[column])             # Only applies the previous encoding to prevent cross-contamination/learning from test data
 
 # Scale the numerical features
 scaler = preprocessing.StandardScaler()
-train_data[numerical_columns] = scaler.fit_transform(train_data[numerical_columns])     # Encodes the numerical features, then applies the encoding
-test_data[numerical_columns] = scaler.transform(test_data[numerical_columns])           # Only applies the previous encoding to prevent cross-contamination/learn from test data
+train_data[numerical_columns] = scaler.fit_transform(train_data[numerical_columns])     # Scales the numerical features, then applies the scales
+test_data[numerical_columns] = scaler.transform(test_data[numerical_columns])           # Only applies the previous scaling to prevent cross-contamination/learning from test data
 
 # Create a label encoder for the target variable
 label_encoder = preprocessing.LabelEncoder()
 train_data['label'] = label_encoder.fit_transform(train_data['label'])                  # Encodes the target variable, then applies the encoding
-test_data['label'] = label_encoder.transform(test_data['label'])                        # Only applies the previous encoding to prevent cross-contamination/learn from test data
+test_data['label'] = label_encoder.transform(test_data['label'])                        # Only applies the previous encoding to prevent cross-contamination/learning from test data
 
 # Save the encoded datasets to new files - For debugging
 train_data.to_csv('encoded_train_kdd.csv', index=False)
@@ -61,9 +61,6 @@ random_forest = RandomForestClassifier()
 with open(RESULTSFILE, "w") as f:
     f.write("")
 
-# Ensure Data Types are the same for comparison
-comparison_values = target_test_data.values
-
 # Function to evaluate models
 def run_model(model, feature_train_data, target_train_data, feature_test_data, target_test_data):
     # Train the model - Uses training data
@@ -71,6 +68,9 @@ def run_model(model, feature_train_data, target_train_data, feature_test_data, t
 
     # Make predictions - Uses test data
     label_prediction = model.predict(feature_test_data)
+
+    # Ensure Data Types are the same for comparison
+    comparison_values = target_test_data.values
     
     # Calculate metrics - Uses built-in functions from sklearn to avoid calculation errors
     accuracy = accuracy_score(comparison_values, label_prediction)
